@@ -159,7 +159,7 @@ iso_header='       tau0x,tau1x,thet0,thet1, hpfac, gndfac,HARD3DFRAC; hlatex nex
 
 
 
-for load_ind=[3,7,10]%1:length(load_type) %for different loading condition
+for load_ind=length(load_type)%[3,7,10]%1:length(load_type) %for different loading condition
     run_total=load_ind;%run_total+1;
     
     mkdir(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
@@ -239,7 +239,7 @@ copyfile('/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/PSR00_
 
 % system(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/vpsc7_multi_10_07_2014']);%for BC_New_07-Oct-2014
 
-%system(['/home/minhsonpham/Documents/CMU-NIST/AA5754/COD\ files/Model/wts2cod.sh']);
+system(['/home/minhsonpham/Documents/MATLAB/Matlab\ for\ VPSC_Multijunction/VPSC_Multijunction_Matlabscript/wts2cod_con.sh']);
 
 %  %------------------%
 %     fid=fopen('STR_STR.OUT'); % loaded file should locate at the working directory. 
@@ -388,7 +388,20 @@ fclose(fid_tex_post4);
 end % end of splitting texture
 end
 
-%%**************Stress&strain analysis****************
+%% 09232015: this section to convert TEXTURE.OUT to TEXTURE.COD and smooth COD file
+run_total=0;
+for load_ind=1:length(load_type)%[3,7,10]%1:length(load_type) %for different loading condition
+    run_total=load_ind;%run_total+1;
+    
+    mkdir(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
+        num2str(run),'/',load_type(load_ind,:)])
+    cd(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
+        num2str(run),'/',load_type(load_ind,:)])
+system(['/home/minhsonpham/Documents/MATLAB/Matlab\ for\ VPSC_Multijunction/VPSC_Multijunction_Matlabscript/wts2cod_con.sh']);
+end % for different choice of loading conditions
+%%
+
+%% **************Stress&strain analysis****************
 figure_stress=open('/home/minhsonpham/Documents/CMU-NIST/AA5754/Figures/Yield surface/Flow stress_exp.fig');
 run_total=0;
 run=1;
