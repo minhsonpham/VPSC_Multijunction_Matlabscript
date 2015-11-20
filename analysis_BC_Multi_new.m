@@ -1,54 +1,13 @@
-%% Plotting experimental ODF
-exp_cod=['UNI15.COD   ';'PS15.COD    ';'BB15.COD    ';'BB20.COD    ';'PS15_TD.COD ';'UNI15_TD.COD'];
-cd('D:\CMU-NIST\AA5754\COD files\Exp');
-     copyfile('D:\CMU-NIST\AA5754\BC\plottex.m')
-
-% exp_cod=['BB05.COD';'BB10.COD';'BB15.COD'];
-
-for load_ind=1:6
-    %------------------%
-    if load_ind==1
-        fid=fopen(['D:\CMU-NIST\AA5754\COD files\Exp\',...
-        exp_cod(load_ind,1:9)]); % Reading smoothed cod file
-    elseif load_ind==2
-    fid=fopen(['D:\CMU-NIST\AA5754\COD files\Exp\',...
-        exp_cod(load_ind,1:8)]);
-    elseif load_ind==3
-    fid=fopen(['D:\CMU-NIST\AA5754\COD files\Exp\',...
-        exp_cod(load_ind,1:8)]);
-    elseif load_ind==4
-    fid=fopen(['D:\CMU-NIST\AA5754\COD files\Exp\',...
-        exp_cod(load_ind,1:8)]);
-    elseif load_ind==5
-    fid=fopen(['D:\CMU-NIST\AA5754\COD files\Exp\',...
-        exp_cod(load_ind,1:11)]); % Reading smoothed cod file 
-    elseif load_ind==6
-        fid=fopen(['D:\CMU-NIST\AA5754\COD files\Exp\',...
-        exp_cod(load_ind,1:12)]); % Reading smoothed cod file
-    end
-    
-    m=1;
-for n=1:19
-    smooth_tex{run_total,m}= textscan(fid,'%6f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f',...
-            'HeaderLines',2);
-    for o=1:19
-       dummy_tex{m}(:,o)=smooth_tex{run_total,m}{1,o}(:);
-    end
-    m=m+1;
-    textscan(fid,'%s',1);
-end
-fclose(fid);
-
-
-for n=1:19
-odf_exp{load_ind}(:,:,n)=dummy_tex{1,n};
-end
-
-%%plot texture
-plottex(exp_cod(load_ind,1:12),odf_exp{load_ind});
-
-end
-%%------end------------
+% This script is to analyze the OUTPUT of VPSC runs
+% It reads simulated stress-strain from STRSTR.OUT
+% Fitting stress_strain curves by a polynomial of 4
+% Calculating workdone during all considered loading paths
+% Calculating stresses at same work done in all simulated strain paths
+% The workdone is equal to work done during Unixial RD at specific strain
+% levels
+% Plotting both simulated and experimental stress paths in (sigma_RD,
+% sigma_TD) space for comparison
+% Saving figures and analyzed data
 
 %------------reading experimental values of stress--------------------%
 clear
@@ -56,24 +15,14 @@ load('D:\CMU-NIST\AA5754\Exp. data\U_PS_BB\fitted_U_PS_BB.mat')
 %figure_stress=open('D:\CMU-NIST\AA5754\Figures\Yield surface\Flow stress_exp.fig');
 %------------STRSTR-END-------------------%
 
-%fitting function for stress_strain curve 
-power_law=fittype('a/b*(1-exp(-b*x))+c'); 
-            
-options1 = fitoptions(power_law);
-options1.Robust = 'LAR';
-options1.MaxFunEvals = 6e3;
-options1.MaxIter = 3e4;
-options1.TolFun=10-10;
-options1.StartPoint = [9.9  0.1     128];
-options1.Upper =      [100   1       400];
-options1.Lower =      [0    0        0]; 
-
 % texture=['Textuin.txt'];
 % 
 % load_type=['RDT';'PSR';'BBT';'PST';'TDT'];
 % 
 label=['(b)';'(c)';'(d)';'(e)';'(f)';'(a)'];
 
+% Values of latent hardening. need them in case the values of latent
+% hardening are not loaded from BC_multijunction_new.m
 s=1;
 col=ones(5,1);
 col(1)=6.001;
@@ -166,48 +115,6 @@ for load_ind=1:length(load_type) %for different loading condition
 fclose(fid);
  
 y2=@(x)x;
-
-
-% %------------------%
-% if load_ind==5
-%     fid=fopen('TEX_PH1_15.cmh'); % Reading smoothed cod file 
-% else fid=fopen('TEX_PH1.cmh'); % Reading smoothed cod file 
-% end
-% 
-%     m=1;
-% for n=1:19
-%     smooth_tex{run_total,m}= textscan(fid,'%6f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f %4f',...
-%             'HeaderLines',2);
-%     for o=1:19
-%        dummy_tex{m}(:,o)=smooth_tex{run_total,m}{1,o}(:);
-%     end
-%     m=m+1;
-%     textscan(fid,'%s',1);
-% end
-% fclose(fid);
-% 
-% 
-% for n=1:19
-% odf_out{run_total}(:,:,n)=dummy_tex{1,n};
-% end
-% 
-% %%plot texture
-% plottex(['TEX_OUT_15',load_type(load_ind,:)],odf_out{run_total});
-
-% %%loading expertimental odf
-% if load_ind==1
-%      fig_tex=open('D:\CMU-NIST\AA5754\COD files\Exp\UNI15.COD   .fig')
-% 
-% elseif load_ind==2
-%     fig_tex=open('D:\CMU-NIST\AA5754\COD files\Exp\PS15.COD    .fig')
-% elseif load_ind==3
-%     fig_tex=open('D:\CMU-NIST\AA5754\COD files\Exp\BB15.COD    .fig')
-% elseif load_ind==4
-%     fig_tex=open('D:\CMU-NIST\AA5754\COD files\Exp\PS15_TD.COD .fig')
-% %close(gcf)
-% elseif load_ind==5
-%     fig_tex=open('D:\CMU-NIST\AA5754\COD files\Exp\UNI15_TD.COD.fig')
-% end
 
 end % for different choice of loading conditions
 end % for latent running
