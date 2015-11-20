@@ -21,7 +21,7 @@ figure_stress=open('/home/minhsonpham/Documents/CMU-NIST/AA5754/Figures/Yield su
 
 s=1;
 col=ones(5,1);
-col(1)=6.001;
+col(1)=2.001;
 col(5)=1;
 
 cop=ones(5,1);
@@ -29,12 +29,12 @@ cop(1)=1.0001;
 cop(5)=1;
 
 h=ones(5,1);
-h(1)=1.2;
+h(1)=1.00;
 h(3)=5;
 h(5)=1;
 
 lc=ones(5,1);
-lc(1)=4.1;
+lc(1)=1.2;
 lc(5)=1;
 
 gl=ones(5,1);
@@ -63,8 +63,9 @@ load_type=['RDT00';'RDTm1';'PSRm1';'PSRm0';'PSR00';'BB000';'BBTRD';'PST00';'PSTm
       end
   end
   
-  BC_name='BC_New_31-Oct-2014'; % the same as BC_name='BC_New_29-Oct-2014' but re-running for 3,7,10 for recorded strain paths
-  BC_name='BC_New_29-Oct-2014'; % including near uniaxial loadings based on the measured r-values
+  BC_name='BC_New_22-Oct-2015'; % the same loading paths as BC_name='BC_New_29 & 31-Oct-2014', but different latent hardening, in particular theta0
+%   BC_name='BC_New_31-Oct-2014'; % the same as BC_name='BC_New_29-Oct-2014' but re-running for 3,7,10 for recorded strain paths
+%   BC_name='BC_New_29-Oct-2014'; % including near uniaxial loadings based on the measured r-values
 %    BC_name='BC_New_09-Oct-2014/2'; % the same as BC_New_09-Oct-2014, different paths for near exact
 %   BC_name='BC_New_09-Oct-2014'; % use PSRD00 prerun as input.
 %   BC_name='BC_New_08-Oct-2014';
@@ -154,12 +155,11 @@ end
 % iso(run,1:7)=[35 1 4 1 0 0 0.1]; %good for binary-multi junction with self=1
 % iso(run,1:7)=[35 13 15 1 0 0 0.003]; % BC_New_07-Oct-2014 and BC_New_08-Oct-2014 to repeat the same condition as BC_New_13-April-2014
 % iso(run,1:7)=[35 4.0 7.5 1 0 0 0.003]; % BC_New_08-Oct-2014 to repeat the same condition as BC_New_13-April-2014
-iso(run,1:7)=[32.00 3.00 7.50 1.00 0.00 0.00   0.0030]; % BC_New_09-Oct-2014 use PSRD prerun as the initial input
-iso_header='       tau0x,tau1x,thet0,thet1, hpfac, gndfac,HARD3DFRAC; hlatex next line';
+% iso(run,1:7)=[32.00 3.00 7.50 1.00 0.00 0.00   0.0030]; % BC_New_09-Oct-2014 use PSRD prerun as the initial input
+iso(run,1:7)=[32.0 3.0  20.5 5.00 0.00 0.00   0.003]; % BC_New_09-Oct-2014 use PSRD prerun as the initial input
+iso_header='       tau0x,tau1x,thet0,thet1, hpfac, gndfac,HARD3FRAC; hlatex next line';
 
-
-
-for load_ind=length(load_type)%[3,7,10]%1:length(load_type) %for different loading condition
+for load_ind=1:length(load_type)%[3,7,10]%1:length(load_type) %for different loading condition
     run_total=load_ind;%run_total+1;
     
     mkdir(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
@@ -169,7 +169,7 @@ for load_ind=length(load_type)%[3,7,10]%1:length(load_type) %for different loadi
     
 %%Creating input files for running VPSC
 
-line_crys{1,20}=[num2str(iso(run,1:6),'%4.2f'),'   ', num2str(iso(run,7),'%8.4f') iso_header];
+line_crys{1,20}=[num2str(iso(run,1:6),'%6.2f'),'   ', num2str(iso(run,7),'%8.4f') iso_header];
     
 for i=1:24
     line_crys{1,20+i}=num2str(latent{1}(i,1:24),'%10.4f');
@@ -215,8 +215,8 @@ copyfile('/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/PSR00_
     movefile(['LIJ_',load_type(load_ind,:),'.DAT'],'Loading.3')
  else
     if (load_ind==6)||(load_ind==7)
-        step=25;
-    else step=25; % to apply different deformation step
+        step=20;
+    else step=20; % to apply different deformation step if necessary
     end
 
     if load_ind<=7
@@ -239,7 +239,6 @@ copyfile('/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/PSR00_
 
 % system(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/vpsc7_multi_10_07_2014']);%for BC_New_07-Oct-2014
 
-system(['/home/minhsonpham/Documents/MATLAB/Matlab\ for\ VPSC_Multijunction/VPSC_Multijunction_Matlabscript/wts2cod_con.sh']);
 
 %  %------------------%
 %     fid=fopen('STR_STR.OUT'); % loaded file should locate at the working directory. 
@@ -344,7 +343,9 @@ save (['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_nam
 % load_type=['RDT00';'PSRm1';'PSRm0';'PSR00';'BB000';'BBTRD';'PST00';'PSTm0';'PSTm1';'TDT00'];
 load_type=['RDT00';'RDTm1';'PSRm1';'PSRm0';'PSR00';'BB000';'BBTRD';'PST00';'PSTm0';'PSTm1';'TDTm1';'TDT00'];
 
-BC_name='BC_New_29-Oct-2014'; % including near uniaxial loadings based on the measured r-values
+BC_name='BC_New_22-Oct-2015'; % the same loading paths as BC_name='BC_New_29 & 31-Oct-2014', but different latent hardening, in particular theta0
+% BC_name='BC_New_31-Oct-2014'; % the same as BC_name='BC_New_29-Oct-2014' but re-running for 3,7,10 for recorded strain paths
+% BC_name='BC_New_29-Oct-2014'; % including near uniaxial loadings based on the measured r-values
 % BC_name='BC_New_08-Oct-2014'; % evolution of stress paths is good, but too much over estimate
 % BC_name='BC_New_23-Apr-2014';
 % BC_name='BC_New_13-Apr-2014'; %BB good, Near plane conditions fit the experimental data well.
@@ -359,7 +360,7 @@ cd(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name])
 
 %**************Texture extraction********************
 run=1;
-for load_ind=1:length(load_type) %for different loading condition
+for load_ind=1:length(load_type)%[3,7,10] %[3,7,10] for 'BC_New_31-Oct-2014' %1:length(load_type) %for different loading condition
 run_total=load_ind;
 cd(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
 num2str(run),'/',load_type(load_ind,:)])
@@ -389,23 +390,21 @@ end % end of splitting texture
 end
 
 %% 09232015: this section to convert TEXTURE.OUT to TEXTURE.COD and smooth COD file
-run_total=0;
-for load_ind=1:length(load_type)%[3,7,10]%1:length(load_type) %for different loading condition
-    run_total=load_ind;%run_total+1;
-    
-    mkdir(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
-        num2str(run),'/',load_type(load_ind,:)])
+for run=1
+for load_ind=1:length(load_type)%[3,7,10]%[3,7,10] for 'BC_New_31-Oct-2014' %1:length(load_type) %for different loading condition
+    load_ind    
     cd(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
         num2str(run),'/',load_type(load_ind,:)])
 system(['/home/minhsonpham/Documents/MATLAB/Matlab\ for\ VPSC_Multijunction/VPSC_Multijunction_Matlabscript/wts2cod_con.sh']);
 end % for different choice of loading conditions
+end
 %%
 
 %% **************Stress&strain analysis****************
 figure_stress=open('/home/minhsonpham/Documents/CMU-NIST/AA5754/Figures/Yield surface/Flow stress_exp.fig');
 run_total=0;
 run=1;
-for load_ind=[3,7,10]%1:length(load_type) %for different loading condition
+for load_ind=1:length(load_type)%[3,7,10]%1:length(load_type) %for different loading condition
 run_total=load_ind;
 cd(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
 num2str(run),'/',load_type(load_ind,:)])
@@ -422,7 +421,7 @@ S22{run_total,1}=STRSTR{run_total,1}{1,10}-STRSTR{run_total,1}{1,11};
 fclose(fid);
 plot(S11{run_total,1},S22{run_total,1},'r-','LineWidth',2);
 end
-saveas (gcf,['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',BC_name,'.fig'])
+% saveas (gcf,['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',BC_name,'.fig'])
 
 
 figure_stress=open('/home/minhsonpham/Documents/CMU-NIST/AA5754/Figures/Yield surface/Flow stress_exp.fig');
@@ -439,15 +438,15 @@ for run_total=[2,11]%1:length(load_type)%[3,7]%[1,4,5,6]%
 end
 
 figure % to plot r values (solid), q values (dashed)
-for run_total=1:length(load_type)
-    if run_total==2
+for run_total=[3,7,10]%1:length(load_type)
+%    if run_total==2
         plot(STRSTR{run_total,1}{1,4}./STRSTR{run_total,1}{1,5},'r-','LineWidth',3);
         hold on
         plot(abs(STRSTR{run_total,1}{1,4}./STRSTR{run_total,1}{1,3}),'r--','LineWidth',3);
-    elseif run_total==11
+%    elseif run_total==11
         plot(STRSTR{run_total,1}{1,3}./STRSTR{run_total,1}{1,5},'b-','LineWidth',3);
         plot(abs(STRSTR{run_total,1}{1,3}./STRSTR{run_total,1}{1,4}),'b--','LineWidth',3);
-    end
+%    end
 end
 
 figure % to plot strain paths
@@ -466,10 +465,11 @@ for run_total=[3,7,10]%1:length(load_type)
 end
 
 plot([0:0.01:0.2],[0:0.01:0.2],'-','color',[0.5 0.5 0.5])
-%%**********************For detailed stress-strain curves***********
-figure_stress=open('/home/minhsonpham/Documents/CMU-NIST/AA5754/Figures/Yield surface/Flow stress_exp.fig');
- run_total=0;
-for load_ind=1:length(load_type) %for different loading condition
+
+
+%% **********************For detailed stress-strain curves***********
+run_total=0;
+for load_ind=6%1:length(load_type) %for different loading condition
 run_total=run_total+1;
 cd(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
 num2str(run),'/',load_type(load_ind,:)])
@@ -488,20 +488,20 @@ figure
 subplot(1,2,1)
 if load_ind==1
     plot([0:19],URD_11,'k-*','linewidth',3);
-elseif (load_ind>1)&&(load_ind<5)
+elseif (load_ind>1)&&(load_ind<6)
     plot([0:19],PSRD_11,'k-*','linewidth',3);
-elseif load_ind==5
+elseif load_ind==6||load_ind==7
     plot([0:19],BB_S11,'k-*','linewidth',3);
-elseif (load_ind>5)&&(load_ind<9)
+elseif (load_ind>7)&&(load_ind<12)
     plot([0:19],PSTD_11,'k-*','linewidth',3);
 
 end
     hold on
     grid on
     
-if (load_ind<6)
+if (load_ind<8)
     plot(E11{run_total,1}*100,S11{run_total,1},'r-','linewidth',3);
-elseif (load_ind<9)
+elseif (load_ind<12)
     plot(E22{run_total,1}*100,S11{run_total,1},'r-','linewidth',3);
 end
 
@@ -511,17 +511,17 @@ ylabel('\sigma_{11} (MPa)','FontSize',20,'fontweight','b')
 xlabel('\epsilon_{11} (%)','FontSize',20,'fontweight','b')
 
 subplot(1,2,2)
-if (load_ind>1)&&(load_ind<5)
+if (load_ind>1)&&(load_ind<6)
     plot([0:19],PSRD_22,'k-*','linewidth',3);
     hold on
     grid on
     plot(E11{run_total,1}*100,S22{run_total,1},'b-','linewidth',3);
-elseif load_ind==5
+elseif load_ind==6||load_ind==7
     plot([0:19],BB_S22,'k-*','linewidth',3);
     hold on
     grid on
     plot(E22{run_total,1}*100,S22{run_total,1},'b-','linewidth',3);
-elseif (load_ind>5)&&(load_ind<9)
+elseif (load_ind>7)&&(load_ind<12)
     plot([0:19],PSTD_22,'k-*','linewidth',3);
     hold on
     grid on

@@ -107,30 +107,41 @@ texture=['Textuin.txt'];
 % load_type=['RDT00';'PSRm1';'PSRm0';'PSR00';'BB000';'PST00';'PSTm0';'PSTm1';'TDT00'];
 load_type=['RDT00';'PSRm1';'PSRm0';'PSR00';'BB000';'BB005';'BBTRD';'PST00';'PSTm0';'PSTm1';'TDT00'];
 
-BC_name='BC_New_09-Oct-2014/2'; % the same as BC_New_09-Oct-2014, different paths for near exact
+  BC_name='BC_New_31-Oct-2014'; % the same as BC_name='BC_New_29-Oct-2014' but re-running for 3,7,10 for recorded strain paths
+%   BC_name='BC_New_29-Oct-2014'; % including near uniaxial loadings based on the measured r-values
+% BC_name='BC_New_09-Oct-2014/2'; % the same as BC_New_09-Oct-2014, different paths for near exact
 % BC_name='BC_Multi_sum_Oct04';
 % BC_name='BC_Multi_Sep30';
 % BC_name='BC_New_23-Apr-2014';
-cd(['D:\CMU-NIST\VPSC7b_multijunctions\New\',BC_name])
+
+
+% path_dir='D:\CMU-NIST\VPSC7b_multijunctions\New\';
+% slash_dir='\';
+
+path_dir='~/Documents/VPSC_code/VPSC7b_multijunctions/New/';
+slash_dir='/';
+
+
+cd([path_dir,BC_name])
 
 
 for tex=1
     run_total=0;
-%     cd(['D:\CMU-NIST\Multijunction\VPSC7b\BC_Multi_5\',BC_name,'\',texture(tex,1:7)]);
-%     load(['D:\CMU-NIST\Multijunction\VPSC7b\BC_Multi_5\',BC_name,'\',texture(tex,1:7),'\',BC_name,'Textuin2.mat']);
-    cd(['D:\CMU-NIST\VPSC7b_multijunctions\New\',BC_name]);
+%     cd(['D:\CMU-NIST\Multijunction\VPSC7b\BC_Multi_5\',BC_name,slash_linux,texture(tex,1:7)]);
+%     load(['D:\CMU-NIST\Multijunction\VPSC7b\BC_Multi_5\',BC_name,slash_linux,texture(tex,1:7),slash_linux,BC_name,'Textuin2.mat']);
+    cd([path_dir,BC_name]);
 
 % end
 
 for run=1%:4  % running for different choice of latent hardening
-    cd(['D:\CMU-NIST\VPSC7b_multijunctions\New\',BC_name,'\',num2str(run)])
+    cd([path_dir,BC_name,slash_dir,num2str(run)])
     
 for load_ind=1:length(load_type) %for different loading condition
     run_total=run_total+1;
   if load_ind<5||load_ind>6  
-    cd(['D:\CMU-NIST\VPSC7b_multijunctions\New\',BC_name,'\',num2str(run),'\',load_type(load_ind,:)])
+    cd([path_dir,BC_name,slash_dir,num2str(run),slash_dir,load_type(load_ind,:)])
   else
-      cd(['D:\CMU-NIST\VPSC7b_multijunctions\New\PSR00_prerun\BB_2ndstep'])
+      cd([path_dir,'PSR00_prerun',slash_dir,'BB_2ndstep'])
   end
     
 %     copyfile('D:\CMU-NIST\AA5754\BC\plottex.m')
@@ -269,29 +280,36 @@ for m=1:run_total
     end
 end % 
 
- fig_str(tex)=open('D:\Publications\Writing papers\MSP13\Figures\YS_reworked_Son_Fig 17.fig')
+%  fig_str(tex)=open('D:\Publications\Writing papers\MSP13\Figures\YS_reworked_Son_Fig 17.fig'); % for HP
+ 
+ fig_str(tex)=open('/home/minhsonpham/Documents/CMU-NIST/AA5754/Exp. data/U_PS_BB/YS_Mark.fig'); % for Linux
+ 
 %  set(fig_str(tex),'position',[14    14   879   762])
 for run=1%:4
 %  plot(S11_cau{run},S22_cau{run},'g-','LineWidth',3)
-plot(stress11{1}(1:16),stress22{1}(1:16),'b-','linewidth',3)
-plot(stress11{4}(1:16),stress22{4}(1:16),'b-','linewidth',3)
-  plot(stress11{5}(1:16),stress22{5}(1:16),'b-','linewidth',3)
-  plot(stress11{8}(1:16),stress22{8}(1:16),'b-','linewidth',3)
-  plot(stress11{11}(1:16),stress22{11}(1:16),'b-','linewidth',3)
-  
-    plot(stress11{6}(1:16),stress22{6}(1:16),'b--','linewidth',3)
-
-  plot(stress11{3}(1:16),stress22{3}(1:16),'g-','linewidth',3)
-  plot(stress11{9}(1:16),stress22{9}(1:16),'g-','linewidth',3)
-  
-    plot(stress11{2}(1:18),stress22{2}(1:18),'r-','linewidth',3)
-    plot(stress11{7}(1:18),stress22{7}(1:18),'r-','linewidth',3)
-  plot(stress11{10}(1:18),stress22{10}(1:18),'r-','linewidth',3)
-  plot(stress11{1}(1:18),stress22{1}(1:18),'r-','linewidth',3)
-    plot(stress11{11}(1:18),stress22{11}(1:18),'r-','linewidth',3)
+for load_ind=1:length(load_type)
+plot(stress11{load_ind}(1:16),stress22{load_ind}(1:16),'b-','linewidth',3)
+% 
+% plot(stress11{1}(1:16),stress22{1}(1:16),'b-','linewidth',3)
+% plot(stress11{4}(1:16),stress22{4}(1:16),'b-','linewidth',3)
+%   plot(stress11{5}(1:16),stress22{5}(1:16),'b-','linewidth',3)
+%   plot(stress11{8}(1:16),stress22{8}(1:16),'b-','linewidth',3)
+%   plot(stress11{11}(1:16),stress22{11}(1:16),'b-','linewidth',3)
+%   
+%     plot(stress11{6}(1:16),stress22{6}(1:16),'b--','linewidth',3)
+% 
+%   plot(stress11{3}(1:16),stress22{3}(1:16),'g-','linewidth',3)
+%   plot(stress11{9}(1:16),stress22{9}(1:16),'g-','linewidth',3)
+%   
+%     plot(stress11{2}(1:18),stress22{2}(1:18),'r-','linewidth',3)
+%     plot(stress11{7}(1:18),stress22{7}(1:18),'r-','linewidth',3)
+%   plot(stress11{10}(1:18),stress22{10}(1:18),'r-','linewidth',3)
+%   plot(stress11{1}(1:18),stress22{1}(1:18),'r-','linewidth',3)
+%     plot(stress11{11}(1:18),stress22{11}(1:18),'r-','linewidth',3)
 
 hold on
 grid on
+end
 end
 
 figure
@@ -302,7 +320,7 @@ for m=1%[3,9]%[2,3,7,9,10]
 end
 plot([0:0.01:0.25],feval(y2,[0:0.01:0.25]),'k-')
 
-saveas (gcf,['D:\CMU-NIST\VPSC7b_multijunctions\New\',BC_name,'\',filename_post,'.fig'])
+saveas (gcf,[path_dir,BC_name,slash_dir,filename_post,'.fig'])
 % legend('BB-11-1','BB-11-2','BB-11-3','BB','BB-22-3','BB-22-2','BB-22-1')
 
 
@@ -312,5 +330,5 @@ saveas (gcf,['D:\CMU-NIST\VPSC7b_multijunctions\New\',BC_name,'\',filename_post,
 
 
 filename_post=[BC_name,texture(tex,1:7),'_post_',date,'.mat'];
-save (['D:\CMU-NIST\VPSC7b_multijunctions\New\',BC_name,'\',filename_post])
+save ([path_dir,BC_name,'\',filename_post])
 end
