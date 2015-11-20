@@ -1,5 +1,15 @@
-%%this matlab script is to run VPSC_multijunction
-%%this script is similar to BC_multijunction.m, except it is dedicated to simulation runs stored in VPSC7b_multijunctions/New
+% this matlab script is to generate necessary input files for each strain path
+% It call VPSC_multijunction to run the code, but not recommended because
+% of it will slowdown the simulation
+% It reads Fcclatent.sx (e.g., the accompanied Fcclatent_template.sx in the GITHUB repo
+% It reads vpsc7.in, main input for vpsc 
+% Load experimental data (if necessary) for simulation vs experiment comparison 
+% Need to assign values to latent hardening parameters. s: self, cop: coplanar, gl: glissile, h: hirth, lc: lomer-cottrell.
+% can run the code for multiple choices of latent hardening values, e.g., all variables cop, gl, h, lc given below are an array of five entries.
+% Assigning values to bs1, bs2; % differentiate interactions of a system with other two systems those have opposite directions
+% Providing names for texture input files
+% Specifying loading paths, each loading path will be run in a specific directory
+
 fid_latent=fopen('/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/Fcclatent.sx','r'); % reading the template of latent hardening
     for l=1:68
     line_crys{l}=fgetl(fid_latent);
@@ -42,10 +52,12 @@ gl(1)=1.01;
 gl(2)=5;
 gl(5)=1;
 
-run=1;
-run_total=1;
 bs1=0.8; % differentiate interactions of a system with other two systems those have opposite directions
 bs2=0.5; % for opposite slip directions
+
+
+run=1;
+run_total=1;
 
 texture=['Textuin.txt'];
 
@@ -92,14 +104,20 @@ load_type=['RDT00';'RDTm1';'PSRm1';'PSRm0';'PSR00';'BB000';'BBTRD';'PST00';'PSTm
 % else
 %     run1=1;
     run_total=0;
+    
+    %%creating a folder for each BC_name
 %     mkdir(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',texture(1:7)])
 %     cd(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',texture(1:7)]);
 % end
 
 for run=1%1:4  % running for different choice of latent hardening
+    
+    %%two code lines below are to create an folder for each run of choice
+    %%of latent hardening value
     mkdir(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',num2str(run)])
     cd(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',num2str(run)])
         
+%****************************Updating hardening matrix*********************************************    
 latent{run}(1,1:24)=[s cop(run) cop(run)   h(run) gl(run) lc(run)    col(run) lc(run) lc(run)   h(run) lc(run) gl(run) ...
                      s cop(run) cop(run)   h(run) gl(run) lc(run)    col(run) lc(run) lc(run)   h(run) lc(run) gl(run)];
 
@@ -149,7 +167,9 @@ for i=1:24
         end
     end
 end
+%****************************Updating hardening matrix-Done*********************************************
 
+%****************************Updating Voce-hardening parameter for each slip system**********************
 % iso(run,1:6)=[148      95.25           160           2.5      0  0];
 % iso(run,1:6)=[37  18  80   10      0  0];
 % iso(run,1:7)=[35 1 4 1 0 0 0.1]; %good for binary-multi junction with self=1
@@ -158,17 +178,21 @@ end
 % iso(run,1:7)=[32.00 3.00 7.50 1.00 0.00 0.00   0.0030]; % BC_New_09-Oct-2014 use PSRD prerun as the initial input
 iso(run,1:7)=[32.0 3.0  20.5 5.00 0.00 0.00   0.003]; % BC_New_09-Oct-2014 use PSRD prerun as the initial input
 iso_header='       tau0x,tau1x,thet0,thet1, hpfac, gndfac,HARD3FRAC; hlatex next line';
+%****************************Updating Voce-hardening parameter for each slip system-Done**********************
 
 for load_ind=1:length(load_type)%[3,7,10]%1:length(load_type) %for different loading condition
     run_total=load_ind;%run_total+1;
     
+    % Creating a directory folder for each loading path and set the created
+    % directory as the current working directory
     mkdir(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
         num2str(run),'/',load_type(load_ind,:)])
     cd(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/',BC_name,'/',...
         num2str(run),'/',load_type(load_ind,:)])
+ 
     
-%%Creating input files for running VPSC
-
+%%**********Creating input files for running VPSC for each load path*******
+% Writing .sx file
 line_crys{1,20}=[num2str(iso(run,1:6),'%6.2f'),'   ', num2str(iso(run,7),'%8.4f') iso_header];
     
 for i=1:24
@@ -182,7 +206,7 @@ end
 fclose(fid_latent);
 
 
-%create vpsc main input file (vpsc7.in) in the working directory
+% writing vpsc main input file (vpsc7.in) in the working directory
 if load_ind==3
     line_in{32}='1'; % = 2 if want to run PCYS for BB condition
 else
@@ -204,7 +228,8 @@ for i=1:40
 end
 fclose(fid_in);
 
-%create the texture input file in the working directory
+%create the texture input file in the working directory by copying an
+%existing texture file, e.g., below is the initial texture of AA5754
 copyfile('/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/Textuin.txt')
 
 copyfile('/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/PSR00_prerun/BB_2ndstep/POSTMORT.IN')
@@ -232,6 +257,9 @@ copyfile('/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/PSR00_
     end
         fclose(fid_load);
  end
+ %%**********Creating input files for running VPSC for each load path-Done *******
+ 
+ %%**********************Calling VPSC executable (by uncomment the next code line)*****************
 
 % system(['/home/minhsonpham/Documents/VPSC\ code/VPSC7b_multijunctions/VPSC7b_new_manuscript']);
 
@@ -239,7 +267,10 @@ copyfile('/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/New/PSR00_
 
 % system(['/home/minhsonpham/Documents/VPSC_code/VPSC7b_multijunctions/vpsc7_multi_10_07_2014']);%for BC_New_07-Oct-2014
 
-
+ %%**********************Calling VPSC executable-Done*****************
+ 
+ 
+ %%**********************Reading STRSTR.OUT to do preliminary sim vs exp comparison*****************
 %  %------------------%
 %     fid=fopen('STR_STR.OUT'); % loaded file should locate at the working directory. 
 %         STRSTR{run_total,1}= textscan(fid,'%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f',...
